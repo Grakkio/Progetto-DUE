@@ -27,14 +27,13 @@ public class Piazzola {
 		this.idPiazzola = idPiazzola;
 	}
 
-	public ArrayList<Prenotazione> getPrenotazioni() {
-		return prenotazioni;
-	}
-
-	public void setPrenotazioni(ArrayList<Prenotazione> prenotazioni) {
-		this.prenotazioni = prenotazioni;
+	public void setStato(String stato) {
+		this.statoPiazzola = stato;
 	}
 	
+	public String getStato() {
+		return this.statoPiazzola;
+	}
 	
 	
 	
