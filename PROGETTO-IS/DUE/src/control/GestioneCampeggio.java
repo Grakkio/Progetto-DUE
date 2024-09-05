@@ -131,8 +131,9 @@ public class GestioneCampeggio{
 		conto = ContoSpeseDAO.readContoSpesa(codiceConto);
 		servizio = ServizioDAO.readServizio(idServizio);
 		//controllo se conto spese attivo
-		if(!(conto.equals("ATTIVO"))) {throw new perationException("Conto non attivo!!\n");}
-		if(servizio == null) {throw new perationException("Servizio inesistente!!\n");}
+		if(conto == null) {throw new OperationException("Conto non presente!!\n");}
+		if(!(conto.equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
+		if(servizio == null) {throw new OperationException("Servizio inesistente!!\n");}
 		this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
 		this.servizio = new Servizio (servizio.getPrezzoServizio(), servizio.getTipoServizio(), servizio.getIdServizio());
 		aggiornaConto(this.conto, this.servizio);
@@ -172,9 +173,9 @@ public class GestioneCampeggio{
 		float totale = 0;
 		try {
 			conto = ContoSpeseDAO.readContoSpesa(codiceConto);
-			if(conto == null) {throw new perationException("Conto non presente!!\n");}
-			if(!(conto.equals("ATTIVO"))) {throw new perationException("Conto non attivo!!\n");}
-			if(conto.getTotaleCorrente() == 0) {throw new perationException("Conto vuoto!!\n");}
+			if(conto == null) {throw new OperationException("Conto non presente!!\n");}
+			if(!(conto.equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
+			if(conto.getTotaleCorrente() == 0) {throw new OperationException("Conto vuoto!!\n");}
 			this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
 			totale = registraPagamento(this.conto);
 			InvioContoFinale(email, totale);
@@ -201,15 +202,15 @@ public class GestioneCampeggio{
 	}
 	
 	private void InvioContoFinale(String Email, float totale) {
-		try {
+		//try {
 			System.out.println("email: " +Email+ "\n"+ totale+ "\n");
-		}catch(DBConnectionException dEx){
-			throw new OperationException("\nRiscontrato problema interno invia mail!\n");
-		}catch(DAOException ex) {
-			throw new OperationException("Ops, errore mail non inviata!\n");
+		//}catch(DBConnectionException dEx){
+			//throw new OperationException("\nRiscontrato problema interno invia mail!\n");
+		//}catch(DAOException ex) {
+			//throw new OperationException("Ops, errore mail non inviata!\n");
 		}
 		
-	}
+	
 	
 	private String ChiusuraConto (ContoSpese Conto) {
 		try {
