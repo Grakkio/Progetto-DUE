@@ -1,21 +1,22 @@
 package entity;
 
 import java.time.*;
+import java.util.ArrayList;
 
 public class Prenotazione {
 private int codicePrenotazione;
 private LocalDate dataInizio;
 private LocalDate dataFine;
 private float prezzoPrenotazione;
-private Piazzola piazzola;
+private ArrayList<Piazzola> piazzole;
 private ClienteRegistrato cliente;
 
-public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, Piazzola p, ClienteRegistrato cl ) {
+public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, ArrayList<Piazzola> piazzole, ClienteRegistrato cl ) {
 	this.codicePrenotazione = codpren;
 	this.dataInizio = datai;
 	this.dataFine = dataf;
 	this.prezzoPrenotazione = prezzopren;
-	this.piazzola = p;
+	this.piazzole =new ArrayList<Piazzola>();
 	this.cliente = cl;
 }
 

@@ -50,22 +50,58 @@ public class GestioneCampeggio{
 			
 			categoria = Categoria;
 			tipologia = tipo;
-			settore = SettoreDAO.read(NomeSettore, categoria, tipo);
+			settore = SettoreDAO.read(NomeSettore, categoria, tipologia);
 			
 			if(settore == null) {throw new OperationException("Settore non trovato");
 			}
-		}*/
 		
 		//controllo piazzole libere
 		
 		int numPiazzole = NumeroPiazzole;
 		
-		/*try{
+		
+			PiazzoleDisponibili = readPiazzoleDisp(settore.codiceSettore);
+			//controllo se ci sono abbastanza piazzole
+			if(PiazzoleDisponibili.size() < numPiazzole){throw new perationException("Numero piazzole non disponibile");}
+			
+			//controllo cliente registrato
+			
+			cliente = ClienteRegistratoDAO.readClienteRegistrato(Email);
+			
+			if(cliente==null){throw new perationException("Numero piazzole non disponibile");}
+			
+			for(int i=0; i<numPiazzole;i++){
+				PiazzoleInAttesa.add(PiazzoleDisponibili[i]);
+			}
+			
+			prezzoTot=settore.getCostoSettore()*numPiazzole;
+			
+			int codpren= PrenotazioneDAO.getMaxCodice();
+			
+			
+			int newcodpren= codpren+1;
+			
+			PrenotazioneDAO.create(newcodpren, DataInizio, DataFine, prezzoTot, PiazzoleInAttesa, Email);
 			
 			
 		}*/
 		
 	}
 	
+	/*private float calcolaPrezzo(Settore es, int num) {
+		float prezzo;
+		
+		if(es.getCategoria().equals("economy")){
+			prezzo=30;	
+		}else {prezzo=50;}
+		
+		if(es.getTipoSettore().equals("tenda")) {
+			prezzo=prezzo+40;
+		}else {
+			prezzo=prezzo+60;}
+		prezzo=prezzo*num;
+		return prezzo;
+	}
+	*/
 	
 }
