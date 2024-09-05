@@ -8,15 +8,15 @@ private int codicePrenotazione;
 private LocalDate dataInizio;
 private LocalDate dataFine;
 private float prezzoPrenotazione;
-private ArrayList<Piazzola> piazzole;
+private Piazzola piazzola;
 private ClienteRegistrato cliente;
 
-public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, ArrayList<Piazzola> piazzole, ClienteRegistrato cl ) {
+public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, Piazzola piazzole, ClienteRegistrato cl ) {
 	this.codicePrenotazione = codpren;
 	this.dataInizio = datai;
 	this.dataFine = dataf;
 	this.prezzoPrenotazione = prezzopren;
-	this.piazzole =new ArrayList<Piazzola>();
+	this.piazzola = piazzole;
 	this.cliente = cl;
 }
 
@@ -59,12 +59,12 @@ public void setPrezzoPrenotazione(float prezzo) {
 	this.prezzoPrenotazione = prezzo;
 }
 
-public void setPiazzole (ArrayList<Piazzola> piazzola) {
-	this.piazzole = piazzola;
+public void setPiazzola (Piazzola piazzola) {
+	this.piazzola = piazzola;
 }
 
-public ArrayList<Piazzola> getPiazzole () {
-	 return this.piazzole;
+public Piazzola getPiazzola () {
+	 return this.piazzola;
 }
 
 public ClienteRegistrato getClienteRegistrato () {

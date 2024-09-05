@@ -21,11 +21,10 @@ import exception.OperationException;
 public class GestioneCampeggio{
 	
 	private static GestioneCampeggio gC = null;
-	private ArrayList<Piazzola> PiazzoleInAttesa;
+	private Piazzola PiazzolaInAttesa = null;
 	private Prenotazione prenotazione = null;
 	
 	protected GestioneCampeggio() {
-		PiazzoleInAttesa = new ArrayList<Piazzola>();
 	}
 	
 	public static GestioneCampeggio getInstance() {
@@ -36,11 +35,11 @@ public class GestioneCampeggio{
 		return gC;
 	}
 	
-	public Prenotazione EffettuaPrenotazione(LocalDate DataInizio, LocalDate DataFine, int NomeSettore, String Categoria, String tipo, String Email, int NumeroPiazzole)throws OperationException{
+	public Prenotazione EffettuaPrenotazione(LocalDate DataInizio, LocalDate DataFine, int NomeSettore, String Categoria, String tipo, String Email)throws OperationException{
 		
 		Settore settore = null;
 		ClienteRegistrato cliente = null;
-		ArrayList<Piazzola> PiazzoleDisponibili = new ArrayList<Piazzola>();
+		Piazzola PiazzolaDisponibile = null;
 		float prezzoTot = 0;
 		String mailCliente = null;
 		String categoria = null;
@@ -56,40 +55,30 @@ public class GestioneCampeggio{
 			if(settore == null) {throw new OperationException("Settore non trovato");
 			}
 		
-		//controllo piazzole libere
-		
-		int numPiazzole = NumeroPiazzole;
+		//controllo piazzola libera
 		
 		
-			PiazzoleDisponibili = readPiazzoleDisp(settore.codiceSettore);
+		
+			PiazzolaDisponibile = readPiazzoleDisp(settore.codiceSettore);
 			//controllo se ci sono abbastanza piazzole
-			if(PiazzoleDisponibili.size() < numPiazzole){throw new perationException("Numero piazzole non disponibile");}
+			if(PiazzolaDisponibile == null){throw new perationException("Piazzola non disponibile");}
 			
 			//controllo cliente registrato
 			
 			cliente = ClienteRegistratoDAO.readClienteRegistrato(Email);
 			
-			if(cliente==null){throw new perationException("Numero piazzole non disponibile");}
+			if(cliente==null){throw new perationException("Cliente non registrato!!");}
 			
-			for(int i=0; i<numPiazzole;i++){
-				PiazzoleInAttesa.add(PiazzoleDisponibili[i]);
-			}
+			PiazzolaInAttesa=PiazzolaDisponibile;
 			
-			prezzoTot=settore.getCostoSettore()*numPiazzole;
-			
-			int codpren= PrenotazioneDAO.getMaxCodice();
-			
-			int newcodpren= codpren+1;
-			
-		
+			prezzoTot=settore.getCostoSettore();
 			
 			prenotazione = new Prenotazione();
 			
-			prenotazione.setCodicePrenotazione(newcodpren);
 			prenotazione.setDataInizio(DataInizio);
 			prenotazione.setDataFine(DataFine);
 			prenotazione.setPrezzoPrenotazione(prezzoTot);
-			prenotazione.setPiazzole(PiazzoleInAttesa);
+			prenotazione.setPiazzola(PiazzolaInAttesa);
 			prenotazione.setClienteRegistrato(Email);
 			
 	
@@ -105,29 +94,10 @@ public class GestioneCampeggio{
 		
 	}
 	
-	/*
-	 * 
-	 * PrenotazioneDAO.create(newcodpren, DataInizio, DataFine, prezzoTot, PiazzoleInAttesa, Email);
-	 * 
-	 * private float calcolaPrezzo(Settore es, int num) {
-		float prezzo;
-		
-		if(es.getCategoria().equals("economy")){
-			prezzo=30;	
-		}else {prezzo=50;}
-		
-		if(es.getTipoSettore().equals("tenda")) {
-			prezzo=prezzo+40;
-		}else {
-			prezzo=prezzo+60;}
-		prezzo=prezzo*num;
-		return prezzo;
-	}
-	*/
 	
 	/*private void salvaPrenotazione() {
 	 * try{
-		PrenotazioneDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzole(), prenotazione.getPrezzoPrenotazione(), prenotazione.getCodicePrenotazione());
+		PrenotazioneDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzola(), prenotazione.getPrezzoPrenotazione()));
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno applicazione!\n");
 		}catch(DAOException ex) {
@@ -136,14 +106,11 @@ public class GestioneCampeggio{
 		
 	}*/
 	
-	private void InvioCodice(String s) {
+	private void InvioCodice(String email) {
 		int codice = 0;
-		codice = PrenotazioneDAO.getMaxCodice(s);
+		codice = PrenotazioneDAO.getMaxCodicePrenotazione(email);
 		prenotazione.setCodicePrenotazione(codice);
-		System.out.println("email: "+prenotazione.getClienteRegistrato()+"\n" + prenotazione.getDataInizio()+ "\n"+ prenotazione.getDataFine()+ "\n"+ prenotazione.getPrezzoPrenotazione() + "\n"+ prenotazione.getCodicePrenotazione()+"\n");
-		for(Piazzola p : prenotazione.getPiazzole()) {
-			System.out.println(p.getIdPiazzola() + "\n");
-		}
+		System.out.println("email: "+prenotazione.getClienteRegistrato()+"\n" + prenotazione.getDataInizio()+ "\n"+ prenotazione.getDataFine()+ "\n"+ prenotazione.getPrezzoPrenotazione() + "\n"+ prenotazione.getCodicePrenotazione()+"\n"+ prenotazione.getPiazzola()+"\n");
 	}
 	
 }
