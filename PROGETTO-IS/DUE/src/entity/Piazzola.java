@@ -6,14 +6,14 @@ public class Piazzola {
 	
 	private int idPiazzola;
 	private int codiceSettore;
-	private String statoPiazzola;
+	
 	
 	
 	//COSTRUTTORE
 	public Piazzola (int piaz, int settore, String stato) {
 		this.idPiazzola = piaz;
 		this.codiceSettore = settore;
-		this.statoPiazzola = stato;
+		
 	}
 	
 	
@@ -26,14 +26,14 @@ public class Piazzola {
 	public void setIdPiazzola(int idPiazzola) {
 		this.idPiazzola = idPiazzola;
 	}
-
-	public void setStato(String stato) {
-		this.statoPiazzola = stato;
-	}
 	
-	public String getStato() {
-		return this.statoPiazzola;
-	}
+	public void setCodiceSettore(int c) {
+		this.codiceSettore = c; 
+	} 
+	
+	public int getCodiceSettore() {
+		return this.codiceSettore; 
+	} 
 	
 	
 	
