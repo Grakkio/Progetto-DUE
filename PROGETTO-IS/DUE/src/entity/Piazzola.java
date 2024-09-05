@@ -6,14 +6,14 @@ public class Piazzola {
 	
 	private int idPiazzola;
 	private int codiceSettore;
-	private ArrayList<Prenotazione> prenotazioni;
+	private String statoPiazzola;
 	
 	
 	//COSTRUTTORE
-	public Piazzola (int piaz, int settore, ArrayList<Prenotazione> prenotazioni) {
+	public Piazzola (int piaz, int settore, String stato) {
 		this.idPiazzola = piaz;
 		this.codiceSettore = settore;
-		this.prenotazioni = new ArrayList<Prenotazione>();
+		this.statoPiazzola = stato;
 	}
 	
 	
