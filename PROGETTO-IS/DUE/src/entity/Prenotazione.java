@@ -59,6 +59,23 @@ public void setPrezzoPrenotazione(float prezzo) {
 	this.prezzoPrenotazione = prezzo;
 }
 
+public void setPiazzole (ArrayList<Piazzola> piazzola) {
+	this.piazzole = piazzola;
+}
+
+public ArrayList<Piazzola> getPiazzole () {
+	 return this.piazzole;
+}
+
+public ClienteRegistrato getClienteRegistrato () {
+	return this.cliente;
+}
+
+public void setClienteRegistrato (ClienteRegistrato cliente) {
+	this.cliente = cliente;
+}
+
+
 //creare funzione savePrenotazione
 
 }

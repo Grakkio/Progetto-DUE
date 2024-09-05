@@ -4,12 +4,14 @@ public class ContoSpese {
 	private String codiceContoSpesa;
 	private String stato;
 	private float totaleCorrente;
+	private ClienteRegistrato cliente;
 	
-	public ContoSpese(String codiceConto, String stato, float totale) {
+	public ContoSpese(String codiceConto, String stato, float totale, ClienteRegistrato cliente) {
 		
 		this.codiceContoSpesa = codiceConto;
 		this.stato = stato;
 		this.totaleCorrente = totale;
+		this.cliente = cliente;
 		
 	}
 	
@@ -39,5 +41,11 @@ public class ContoSpese {
 		return this.totaleCorrente;
 	}
 	
+	public ClienteRegistrato getClienteRegistrato () {
+		return this.cliente;
+	}
 	
+	public void setClienteRegistrato (ClienteRegistrato cliente) {
+		this.cliente = cliente;
+	}
 }

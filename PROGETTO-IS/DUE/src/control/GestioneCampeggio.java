@@ -22,6 +22,7 @@ public class GestioneCampeggio{
 	
 	private static GestioneCampeggio gC = null;
 	private ArrayList<Piazzola> PiazzoleInAttesa;
+	private Prenotazione prenotazione = null;
 	
 	protected GestioneCampeggio() {
 		PiazzoleInAttesa = new ArrayList<Piazzola>();
@@ -35,7 +36,7 @@ public class GestioneCampeggio{
 		return gC;
 	}
 	
-	public ArrayList<String> EffettuaPrenotazione(LocalDate DataInizio, LocalDate DataFine, int NomeSettore, String Categoria, String tipo, String Email, int NumeroPiazzole)throws OperationException{
+	public Prenotazione EffettuaPrenotazione(LocalDate DataInizio, LocalDate DataFine, int NomeSettore, String Categoria, String tipo, String Email, int NumeroPiazzole)throws OperationException{
 		
 		Settore settore = null;
 		ClienteRegistrato cliente = null;
@@ -78,17 +79,37 @@ public class GestioneCampeggio{
 			
 			int codpren= PrenotazioneDAO.getMaxCodice();
 			
-			
 			int newcodpren= codpren+1;
 			
-			PrenotazioneDAO.create(newcodpren, DataInizio, DataFine, prezzoTot, PiazzoleInAttesa, Email);
+		
 			
+			prenotazione = new Prenotazione();
 			
-		}*/
+			prenotazione.setCodicePrenotazione(newcodpren);
+			prenotazione.setDataInizio(DataInizio);
+			prenotazione.setDataFine(DataFine);
+			prenotazione.setPrezzoPrenotazione(prezzoTot);
+			prenotazione.setPiazzole(PiazzoleInAttesa);
+			prenotazione.setClienteRegistrato(Email);
+			
+	
+			
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno applicazione!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, qualcosa e' andato storto..");
+		}
+		*/
+		
+		return prenotazione;
 		
 	}
 	
-	/*private float calcolaPrezzo(Settore es, int num) {
+	/*
+	 * 
+	 * PrenotazioneDAO.create(newcodpren, DataInizio, DataFine, prezzoTot, PiazzoleInAttesa, Email);
+	 * 
+	 * private float calcolaPrezzo(Settore es, int num) {
 		float prezzo;
 		
 		if(es.getCategoria().equals("economy")){
@@ -103,5 +124,26 @@ public class GestioneCampeggio{
 		return prezzo;
 	}
 	*/
+	
+	/*private void salvaPrenotazione() {
+	 * try{
+		PrenotazioneDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzole(), prenotazione.getPrezzoPrenotazione(), prenotazione.getCodicePrenotazione());
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno applicazione!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, errore prenotazione non registrata");
+		}
+		
+	}*/
+	
+	private void InvioCodice(String s) {
+		int codice = 0;
+		codice = PrenotazioneDAO.getMaxCodice(s);
+		prenotazione.setCodicePrenotazione(codice);
+		System.out.println("email: "+prenotazione.getClienteRegistrato()+"\n" + prenotazione.getDataInizio()+ "\n"+ prenotazione.getDataFine()+ "\n"+ prenotazione.getPrezzoPrenotazione() + "\n"+ prenotazione.getCodicePrenotazione()+"\n");
+		for(Piazzola p : prenotazione.getPiazzole()) {
+			System.out.println(p.getIdPiazzola() + "\n");
+		}
+	}
 	
 }
