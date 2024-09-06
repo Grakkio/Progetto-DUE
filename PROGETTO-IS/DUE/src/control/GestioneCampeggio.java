@@ -47,7 +47,7 @@ public class GestioneCampeggio{
 		String categoria = null;
 		String tipologia = null;
 		
-		/*try {
+		try {
 			//controllo esistenza settore
 			
 			categoria = Categoria;
@@ -61,26 +61,26 @@ public class GestioneCampeggio{
 		
 		
 		
-			PiazzolaDisponibile = readPiazzoleDisp(settore.codiceSettore);
+			PiazzolaDisponibile = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore());
 			//controllo se ci sono abbastanza piazzole
-			if(PiazzolaDisponibile == null){throw new perationException("Piazzola non disponibile");}
+			if(PiazzolaDisponibile == null){throw new OperationException("Piazzola non disponibile");}
 			
 			//controllo cliente registrato
 			
 			cliente = ClienteRegistratoDAO.readClienteRegistrato(Email);
 			
-			if(cliente==null){throw new perationException("Cliente non registrato!!");}
+			if(cliente==null){throw new OperationException("Cliente non registrato!!");}
 			
 			PiazzolaInAttesa=PiazzolaDisponibile;
 			
-			prezzoTot=settore.getCostoSettore();
+			prezzoTot=settore.getCosto();
 			
 			prenotazione = new Prenotazione();
 			
 			prenotazione.setDataInizio(DataInizio);
 			prenotazione.setDataFine(DataFine);
 			prenotazione.setPrezzoPrenotazione(prezzoTot);
-			prenotazione.setPiazzola(PiazzolaInAttesa);
+			prenotazione.setPiazzola(PiazzolaInAttesa.getIdPiazzola());
 			prenotazione.setClienteRegistrato(Email);
 			
 	
@@ -90,25 +90,28 @@ public class GestioneCampeggio{
 		}catch(DAOException ex) {
 			throw new OperationException("Ops, qualcosa e' andato storto..");
 		}
-		*/
 		
 		return prenotazione;
 		
 	}
 	
 	
-	/*private void salvaPrenotazione() {
-	 * try{
-		PrenotazioneDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzola(), prenotazione.getPrezzoPrenotazione()));
-		}catch(DBConnectionException dEx){
+	public void salvaPrenotazione(Prenotazione prenotazione) {
+	  try{
+		PrenotazioneDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzola(), prenotazione.getPrezzoPrenotazione());
+	  }catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno applicazione!\n");
 		}catch(DAOException ex) {
 			throw new OperationException("Ops, errore prenotazione non registrata");
 		}
 		
-	}*/
+	}
 	
-	private void InvioCodice(String email) {
+	 public void AnnullaPrenotazione(Prenotazione prenotazione) {
+		 System.out.println("Prenotazione annullata.\n"); //il rifferimento verrà eliminato dal garbage collector in quanto sarà inutilizzata o sarà riutilizzata in altre prenotazioni (overridden)
+	 }
+	
+	public void InvioCodice(String email) {
 		int codice = 0;
 		try {
 		codice = PrenotazioneDAO.getMaxCodicePrenotazione(email);
@@ -121,7 +124,7 @@ public class GestioneCampeggio{
 		}
 		}
 	
-	public String UsufruisciServizio(String CodiceConto, int IdServizio) {
+	public String AcquistaServizio(String CodiceConto, int IdServizio) {
 		String codiceConto = CodiceConto;
 		int idServizio = IdServizio;
 		ContoSpese conto = null;
@@ -136,6 +139,7 @@ public class GestioneCampeggio{
 		if(servizio == null) {throw new OperationException("Servizio inesistente!!\n");}
 		this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
 		this.servizio = new Servizio (servizio.getPrezzoServizio(), servizio.getTipoServizio(), servizio.getIdServizio());
+		StoricoDAO.updateStorico(codiceConto,idServizio, this.servizio.getPrezzoServizio());
 		aggiornaConto(this.conto, this.servizio);
 		String s = new String ("Utilizzo servizio confermato. \n");
 		return s;
@@ -163,6 +167,27 @@ public class GestioneCampeggio{
 		
 	}
 	
+	
+	public void invioElencoSpese(String codiceConto) {
+		ContoSpese conto=null;
+		float totale;
+		ArrayList<Servizio> ElencoSpese = null;
+		try {
+			conto = ContoSpeseDAO.readContoSpesa(codiceConto);
+			totale=conto.getTotaleCorrente();
+			ElencoSpese = new ArrayList<Servizio>(StoricoDAO.readElencoSpese(codiceConto));
+			for(Servizio p : ElencoSpese ) {
+				System.out.println(p.getIdServizio()+ " "+ p.getTipoServizio()+ " "+ p.getPrezzoServizio()+ "\n");
+			}
+			System.out.println("Torale corrente: "+ totale+ "\n");
+			
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno aggiorno conto spese!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, errore conto non aggiornato!\n");
+		}
+	}
+	
 	public String RegistrazionePagamento(String CodiceConto) {
 		
 		ContoSpese conto = null;
@@ -177,7 +202,14 @@ public class GestioneCampeggio{
 			if(!(conto.getStato().equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
 			if(conto.getTotaleCorrente() == 0) {throw new OperationException("Conto vuoto!!\n");}
 			this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
-			totale = registraPagamento(this.conto);
+			stampaContoFinale(this.conto);
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRegistrazione pagamento!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, pagamento non avvenuto!\n");
+		}
+	}
+			/*totale = registraPagamento(this.conto);
 			email=this.conto.getClienteRegistrato();
 			InvioContoFinale(email, totale);
 			conferma = ChiusuraConto(this.conto);
@@ -187,14 +219,25 @@ public class GestioneCampeggio{
 		}catch(DAOException ex) {
 			throw new OperationException("Ops, pagamento non avvenuto!\n");
 		}
-	} 
+	}
+	*/ 
 	
-	private float registraPagamento(ContoSpese Conto) {
-		ContoSpese conto = Conto;
+	
+	private void stampaContoFinale(ContoSpese c) {
+		System.out.println("Conto totale: " + c.getTotaleCorrente()+ "\n"); //deve stampare conto dettagliato ->anche conto spese
+	}
+	
+	
+	public String salvaPagamento() {
+		
+		ContoSpese conto = this.conto;
+		String conferma = new String(); 
 		try {
 		conto.setStato("PAGATO");
 		ContoSpeseDAO.updateStatoContoSpesa("PAGATO");
-		return conto.getTotaleCorrente();
+		InvioContoFinale(conto);
+		conferma = ChiusuraConto(conto);
+		return conferma;
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno registra pagamento!\n");
 		}catch(DAOException ex) {
@@ -202,15 +245,20 @@ public class GestioneCampeggio{
 		}
 	}
 	
-	private void InvioContoFinale(String Email, float totale) {
+	
+	private void InvioContoFinale(ContoSpese conto) {	
+		String email = null;
+		float prezzo = 0;
 		//try {
-			System.out.println("email: " +Email+ "\n"+ totale+ "\n");
+			email = new String(conto.getClienteRegistrato());
+			prezzo = conto.getTotaleCorrente();
+			System.out.println("email: " +email+ "\ntotale: "+ prezzo+ "\n");
 		//}catch(DBConnectionException dEx){
-			//throw new OperationException("\nRiscontrato problema interno invia mail!\n");
+		//	throw new OperationException("\nRiscontrato problema interno invia mail!\n");
 		//}catch(DAOException ex) {
-			//throw new OperationException("Ops, errore mail non inviata!\n");
-		}
-		
+		//	throw new OperationException("Ops, errore mail non inviata!\n");
+		//}
+	}
 	
 	
 	private String ChiusuraConto (ContoSpese Conto) {
