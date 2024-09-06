@@ -1,25 +1,25 @@
 package entity;
 
 public class ContoSpese {
-	private String codiceContoSpesa;
+	private int codiceContoSpesa;
 	private String stato;
-	private float totaleCorrente;
+	//private float totaleCorrente;
 	private String cliente;
 	
-	public ContoSpese(String stato, float totale, String cliente) {
+	public ContoSpese(String stato, String cliente) {
 		
 		//this.codiceContoSpesa = codiceConto;
 		this.stato = stato;
-		this.totaleCorrente = totale;
+		//this.totaleCorrente = totale;
 		this.cliente = cliente;
 		
 	}
 	
-	public void setCodiceContoSpesa(String codiceConto) {
+	public void setCodiceContoSpesa(int codiceConto) {
 		this.codiceContoSpesa = codiceConto;
 	} 
 	
-	public String getCodiceConto() {
+	public int getCodiceConto() {
 		return this.codiceContoSpesa;
 	}
 	
@@ -31,7 +31,7 @@ public class ContoSpese {
 		return this.stato;
 	}
 	
-	
+	/*
 	public void setTotaleCorrente(float totale) {
 		
 		this.totaleCorrente = totale;
@@ -39,7 +39,7 @@ public class ContoSpese {
 	
 	public float getTotaleCorrente() {
 		return this.totaleCorrente;
-	}
+	}*/
 	
 	public String getClienteRegistrato () {
 		return this.cliente;

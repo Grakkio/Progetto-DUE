@@ -52,7 +52,7 @@ public class GestioneCampeggio{
 			
 			categoria = Categoria;
 			tipologia = tipo;
-			settore = SettoriDAO.read(NomeSettore, categoria, tipologia);
+			settore = SettoriDAO.read(NomeSettore);
 			
 			if(settore == null) {throw new OperationException("Settore non trovato");
 			}
@@ -124,8 +124,8 @@ public class GestioneCampeggio{
 		}
 	}
 	
-	public String AcquistaServizio(String CodiceConto, int IdServizio)throws OperationException {
-		String codiceConto = CodiceConto;
+	public String AcquistaServizio(int CodiceConto, int IdServizio)throws OperationException {
+		int codiceConto = CodiceConto;
 		int idServizio = IdServizio;
 		ContoSpese conto = null;
 		Servizio servizio = null;
@@ -251,7 +251,7 @@ public class GestioneCampeggio{
 		float prezzo = 0;
 		//try {
 			email = new String(conto.getClienteRegistrato());
-			prezzo = conto.getTotaleCorrente();
+			prezzo = conto.getTotaleCorrente();//aggiornare
 			System.out.println("email: " +email+ "\ntotale: "+ prezzo+ "\n");
 		//}catch(DBConnectionException dEx){
 		//	throw new OperationException("\nRiscontrato problema interno invia mail!\n");
@@ -276,11 +276,14 @@ public class GestioneCampeggio{
 		
 	}
 	
-	public String AperturaConto(String Email) throws OperationException {
-		ContoSpese conto = new ContoSpese("ATTIVO", 0, Email);
+	public int AperturaConto(String Email) throws OperationException {
+		String email=null;
+		ContoSpese conto = new ContoSpese("ATTIVO", Email);
 		try {
-		ContiSpeseDAO.create(conto);
-		conto.setCodiceContoSpesa(ContiSpesiDAO.RestituisciID(Email)); //aggiungere funzione nel database
+			email=ClientiRegistratiDAO.readContoSpesa(Email);
+			if(email == null) {throw new OperationException("Cliente non presente!!\n");}
+			ContiSpeseDAO.create(conto);
+			conto.setCodiceContoSpesa(ContiSpesiDAO.RestituisciID(Email)); //aggiungere funzione nel database
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno ad apertura conto!\n");
 		}catch(DAOException ex) {
@@ -308,7 +311,7 @@ public class GestioneCampeggio{
 		ArrayList<Piazzola> PiazzoleDisponibili = null;
 		Settore settore = null;
 		try {
-		settore = SettoriDAO.read(NomeSettore, Categoria, Tipo);
+		settore = SettoriDAO.read(NomeSettore);
 		
 		if(settore == null) {throw new OperationException("Settore non trovato");
 		}
@@ -330,10 +333,12 @@ public class GestioneCampeggio{
 	
 	public void InsericiPiazzola(int idPiazzola, int idSettore)throws OperationException {
 		Settore settore = null;
-		Piazzola piazzola = new Piazzola(idSettore, idPiazzola);
+		Piazzola piazzola = null;
 		try{
+			settore = SettoriDAO.read(idSettore);
+			if(settore == null) {throw new OperationException("Settore non trovato");}
+			piazzola = new Piazzola(idSettore, idPiazzola);
 			PiazzoleDAO.createPiazzola(piazzola);
-			settore = SettoriDAO.readSettore(idSettore);
 			settore.getPiazzole().add(piazzola);
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno a inserimentoPiazzola!\n");
