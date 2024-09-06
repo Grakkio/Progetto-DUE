@@ -8,10 +8,10 @@ private int codicePrenotazione;
 private LocalDate dataInizio;
 private LocalDate dataFine;
 private float prezzoPrenotazione;
-private Piazzola piazzola;
-private ClienteRegistrato cliente;
+private String piazzola;
+private String cliente;
 
-public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, Piazzola piazzole, ClienteRegistrato cl ) {
+public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, String piazzole, String cl ) {
 	this.codicePrenotazione = codpren;
 	this.dataInizio = datai;
 	this.dataFine = dataf;
@@ -59,19 +59,19 @@ public void setPrezzoPrenotazione(float prezzo) {
 	this.prezzoPrenotazione = prezzo;
 }
 
-public void setPiazzola (Piazzola piazzola) {
+public void setPiazzola (String piazzola) {
 	this.piazzola = piazzola;
 }
 
-public Piazzola getPiazzola () {
+public String getPiazzola () {
 	 return this.piazzola;
 }
 
-public ClienteRegistrato getClienteRegistrato () {
+public String getClienteRegistrato () {
 	return this.cliente;
 }
 
-public void setClienteRegistrato (ClienteRegistrato cliente) {
+public void setClienteRegistrato (String cliente) {
 	this.cliente = cliente;
 }
 

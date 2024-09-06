@@ -4,9 +4,9 @@ public class ContoSpese {
 	private String codiceContoSpesa;
 	private String stato;
 	private float totaleCorrente;
-	private ClienteRegistrato cliente;
+	private String cliente;
 	
-	public ContoSpese(String codiceConto, String stato, float totale, ClienteRegistrato cliente) {
+	public ContoSpese(String codiceConto, String stato, float totale, String cliente) {
 		
 		this.codiceContoSpesa = codiceConto;
 		this.stato = stato;
@@ -41,11 +41,11 @@ public class ContoSpese {
 		return this.totaleCorrente;
 	}
 	
-	public ClienteRegistrato getClienteRegistrato () {
+	public String getClienteRegistrato () {
 		return this.cliente;
 	}
 	
-	public void setClienteRegistrato (ClienteRegistrato cliente) {
+	public void setClienteRegistrato (String cliente) {
 		this.cliente = cliente;
 	}
 }
