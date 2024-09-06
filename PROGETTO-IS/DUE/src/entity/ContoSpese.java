@@ -6,9 +6,9 @@ public class ContoSpese {
 	private float totaleCorrente;
 	private String cliente;
 	
-	public ContoSpese(String codiceConto, String stato, float totale, String cliente) {
+	public ContoSpese(String stato, float totale, String cliente) {
 		
-		this.codiceContoSpesa = codiceConto;
+		//this.codiceContoSpesa = codiceConto;
 		this.stato = stato;
 		this.totaleCorrente = totale;
 		this.cliente = cliente;
