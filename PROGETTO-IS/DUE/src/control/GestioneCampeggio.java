@@ -163,21 +163,22 @@ public class GestioneCampeggio{
 		
 	}
 	
-	public String RegistrazionePagamento(String CodiceConto, String Email) {
+	public String RegistrazionePagamento(String CodiceConto) {
 		
 		ContoSpese conto = null;
-		ClienteRegistrato cliente = null;
+		//ClienteRegistrato cliente = null;
 		String codiceConto = CodiceConto;
-		String email = Email;
+		String email;
 		String conferma = new String(); 
 		float totale = 0;
 		try {
 			conto = ContoSpeseDAO.readContoSpesa(codiceConto);
 			if(conto == null) {throw new OperationException("Conto non presente!!\n");}
-			if(!(conto.equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
+			if(!(conto.getStato().equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
 			if(conto.getTotaleCorrente() == 0) {throw new OperationException("Conto vuoto!!\n");}
 			this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
 			totale = registraPagamento(this.conto);
+			email=this.conto.getClienteRegistrato();
 			InvioContoFinale(email, totale);
 			conferma = ChiusuraConto(this.conto);
 			return conferma;
