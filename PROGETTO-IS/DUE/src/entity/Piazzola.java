@@ -10,7 +10,7 @@ public class Piazzola {
 	
 	
 	//COSTRUTTORE
-	public Piazzola (int piaz, int settore, String stato) {
+	public Piazzola (int piaz, int settore) {
 		this.idPiazzola = piaz;
 		this.codiceSettore = settore;
 		

@@ -41,7 +41,7 @@ public class GestioneCampeggio{
 		
 		Settore settore = null;
 		ClienteRegistrato cliente = null;
-		Piazzola PiazzolaDisponibile = null;
+		ArrayList<Piazzola> PiazzoleDisponibili = null;
 		float prezzoTot = 0;
 		String mailCliente = null;
 		String categoria = null;
@@ -61,9 +61,9 @@ public class GestioneCampeggio{
 		
 		
 		
-			PiazzolaDisponibile = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore());
+			PiazzoleDisponibili = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore());
 			//controllo se ci sono abbastanza piazzole
-			if(PiazzolaDisponibile == null){throw new OperationException("Piazzola non disponibile");}
+			if(PiazzoleDisponibili == null){throw new OperationException("Piazzola non disponibile");}
 			
 			//controllo cliente registrato
 			
@@ -71,7 +71,7 @@ public class GestioneCampeggio{
 			
 			if(cliente==null){throw new OperationException("Cliente non registrato!!");}
 			
-			PiazzolaInAttesa=PiazzolaDisponibile;
+			PiazzolaInAttesa=PiazzoleDisponibili.get(0);
 			
 			prezzoTot=settore.getCosto();
 			
@@ -276,5 +276,70 @@ public class GestioneCampeggio{
 		
 	}
 	
+	public String AperturaConto(String Email) {
+		ContoSpese conto = new ContoSpese("ATTIVO", 0, Email);
+		try {
+		ContoSpeseDAO.create(conto);
+		conto.setCodiceContoSpesa(ContoSpeseDAO.RestituisciID(Email));
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno ad apertura conto!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, errore conto non aperto!\n");
+		}
+		
+		return conto.getCodiceConto();
+	}
+	
+	public String Registrazione(String Nome, String Cognome,String Email,String Username, String Password, int Telefono) {
+		String conferma = new String ("Avvenuta registrazione");
+		try {
+			ClienteRegistrato utente = new ClienteRegistrato(Nome, Cognome, Email, Username, Password, Telefono);
+			ClienteRegistratoDAO.createCliente(utente);
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno a registrazione!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, registrazione non avvenuta :( !\n");
+		}
+		return conferma;
+		
+	}
+	
+	public void VisualizzaDisponibilità(LocalDate DataInizio, LocalDate DataFine, int NomeSettore, String Categoria, String Tipo) {
+		ArrayList<Piazzola> PiazzoleDisponibili = null;
+		Settore settore = null;
+		try {
+		settore = SettoreDAO.read(NomeSettore, Categoria, Tipo);
+		
+		if(settore == null) {throw new OperationException("Settore non trovato");
+		}
+	
+	//controllo piazzola libera
+		PiazzoleDisponibili = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore());
+		//controllo se ci sono abbastanza piazzole
+		if(PiazzoleDisponibili == null){throw new OperationException("Piazzola non disponibile");}
+		for(Piazzola p : PiazzoleDisponibili ) {
+			System.out.println(p.getCodiceSettore()+ " "+p.getIdPiazzola()+ " \n");
+		}
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno a visualizzazione settore!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, visualizzazione non disponibile!\n");
+		}
+		
+	}
+	
+	public void InsericiPiazzola(int idPiazzola, int idSettore) {
+		Settore settore = null;
+		Piazzola piazzola = new Piazzola(idSettore, idPiazzola);
+		try{
+			PiazzolaDAO.createPiazzola(piazzola);
+			settore = SettoreDAO.readSettore(idSettore);
+			settore.getPiazzole().add(piazzola);
+		}catch(DBConnectionException dEx){
+			throw new OperationException("\nRiscontrato problema interno a inserimentoPiazzola!\n");
+		}catch(DAOException ex) {
+			throw new OperationException("Ops, piazzola non aggiunta!\n");
+		}
+	}
 	
 }
