@@ -108,10 +108,10 @@ public class GestioneCampeggio{
 		}
 		
 	}
-	
+	/*
 	 public void AnnullaPrenotazione(Prenotazione prenotazione){
 		 System.out.println("Prenotazione annullata.\n"); //il rifferimento verrà eliminato dal garbage collector in quanto sarà inutilizzata o sarà riutilizzata in altre prenotazioni (overridden)
-	 }
+	 }*/
 	
 	public void InvioCodice(String email)throws OperationException {
 		int codice = 0;

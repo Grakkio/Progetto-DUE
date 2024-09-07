@@ -12,6 +12,9 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import control.GestioneCampeggio;
+import entity.Piazzola;
+import entity.Prenotazione;
+import entity.Settore;
 import exception.OperationException;
 
 public class BoundaryClienteRegistrato {
@@ -138,7 +141,9 @@ private static void EffettuaPrenotazione() {
 		
 		LocalDate DataInizio= null;
 		LocalDate DataFine = null;
-
+		Prenotazione p=null;
+		
+		
 		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-gg");
 
 		GestioneCampeggio gestioneCampeggio = GestioneCampeggio.getInstance();  
@@ -230,8 +235,36 @@ private static void EffettuaPrenotazione() {
 				NomeSettore = 3;
 			}else {NomeSettore = 4;}
 		try {
-			gestioneCampeggio.EffettuaPrenotazione(DataInizio, DataFine, NomeSettore, Categoria, Tipo, email);
+			p=gestioneCampeggio.EffettuaPrenotazione(DataInizio, DataFine, NomeSettore, Categoria, Tipo, email);
+			
+			System.out.println("Data Inizio: " + p.getDataInizio()+ "\nData Fine: " + p.getDataFine() +
+					"\nIdPiazzola assegnata: " + p.getPiazzola() + "\nIdSettore assegnato: " + NomeSettore +
+					"\nTipologia: " + Tipo + "\nCategoria: " + Categoria + "\nEmail: " + email + "\nTotale: " + p.getPrezzoPrenotazione() );
+			
 			}catch(OperationException e) {System.out.println(e.getMessage());}	
+		
+		System.out.println("Digita 'Yes' per confermare il pagamento della prenotazione o qualunque altro carattere per annullare..");
+		String conferma = scan.nextLine();
+		
+		try {
+		if (!conferma.equals("Yes") || !conferma.equals("yes") || !conferma.equals("YES") ) {
+			System.out.println("Prenotazione annullata :( \n");
+		}
+		else {
+			System.out.println();
+			System.out.println("Pagamento in corso..");
+			TimeUnit.SECONDS.sleep(3);
+			System.out.println("Pagamento effettuato!");
+			gestioneCampeggio.salvaPrenotazione(p);
+			System.out.println("Prenotazione effettuata :) ");
+			gestioneCampeggio.InvioCodice(email);
+			System.out.println("Codice Prenotazione inviato ;) ");
+		}
+		}catch(OperationException e) {
+			System.out.println(e.getMessage());
+		}catch (Exception e) {
+			System.out.println("Unexpected exception, riprovare..");
+		}
 		}
 
 	private static void AcquistaServizio() {
