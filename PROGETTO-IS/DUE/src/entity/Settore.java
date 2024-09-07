@@ -12,15 +12,12 @@ public class Settore {
 	
 	
 	//COSTRUTTORE
-	public Settore(int cod, float costo, String cat, String tipo, ArrayList<Piazzola> vet) {
-		
+	public Settore(int cod, float costo, String cat, String tipo) {
 		this.codiceSettore = cod;
 		this.costo=costo;
 		this.categoria = cat;
 		this.tipoSettore = tipo;
 		this.piazzole = new ArrayList<Piazzola>();
-		this.piazzole = vet;
-		
 	}
 	
 	

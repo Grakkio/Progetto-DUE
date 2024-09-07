@@ -1,7 +1,7 @@
 package entity;
 
 import java.time.*;
-import java.util.ArrayList;
+
 
 public class Prenotazione {
 private int codicePrenotazione;
@@ -11,17 +11,22 @@ private float prezzoPrenotazione;
 private int piazzola;
 private String cliente;
 
-public Prenotazione() {};
-
-public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, int piazzole, String cl ) {
+public Prenotazione(int codpren, LocalDate datai, LocalDate dataf, float prezzopren, String cl, int p) {
 	this.codicePrenotazione = codpren;
 	this.dataInizio = datai;
 	this.dataFine = dataf;
 	this.prezzoPrenotazione = prezzopren;
-	this.piazzola = piazzole;
+	this.piazzola = p;
 	this.cliente = cl;
 }
 
+public Prenotazione(LocalDate datai, LocalDate dataf, float prezzopren, String cl, int p) {
+	this.dataInizio = datai;
+	this.dataFine = dataf;
+	this.prezzoPrenotazione = prezzopren;
+	this.piazzola = p;
+	this.cliente = cl;
+}
 public LocalDate getDataInizio() {
 	return this.dataInizio;
 }

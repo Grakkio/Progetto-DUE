@@ -6,12 +6,18 @@ public class ContoSpese {
 	//private float totaleCorrente;
 	private String cliente;
 	
-	public ContoSpese(String stato, String cliente) {
+	public ContoSpese(int codiceConto, String stato, String c ) {
 		
-		//this.codiceContoSpesa = codiceConto;
+		this.codiceContoSpesa = codiceConto;
 		this.stato = stato;
-		//this.totaleCorrente = totale;
-		this.cliente = cliente;
+		this.cliente=c;
+		
+	}
+	
+	public ContoSpese(String stato, String c ) {
+		
+		this.stato = stato;
+		this.cliente=c;
 		
 	}
 	
@@ -31,16 +37,16 @@ public class ContoSpese {
 		return this.stato;
 	}
 	
-	/*
-	public void setTotaleCorrente(float totale) {
+	
+	/*public void setTotaleCorrente(float totale) {
 		
 		this.totaleCorrente = totale;
 	}
 	
 	public float getTotaleCorrente() {
 		return this.totaleCorrente;
-	}*/
-	
+	}
+	*/
 	public String getClienteRegistrato () {
 		return this.cliente;
 	}
@@ -49,3 +55,4 @@ public class ContoSpese {
 		this.cliente = cliente;
 	}
 }
+

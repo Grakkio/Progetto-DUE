@@ -6,6 +6,14 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 
+import database.AcquistoDAO;
+import database.ClienteRegistratoDAO;
+import database.ContiSpeseDAO;
+import database.PiazzolaDAO;
+import database.PrenotazioneDAO;
+import database.ServizioDAO;
+import database.SettoreDAO;
+import entity.Acquisto;
 import entity.ClienteRegistrato;
 import entity.ContoSpese;
 import entity.Piazzola;
@@ -16,6 +24,7 @@ import entity.Settore;
 import exception.DAOException;
 import exception.DBConnectionException;
 import exception.OperationException;
+
 
 
 public class GestioneCampeggio{
@@ -43,16 +52,16 @@ public class GestioneCampeggio{
 		ClienteRegistrato cliente = null;
 		ArrayList<Piazzola> PiazzoleDisponibili = null;
 		float prezzoTot = 0;
-		String mailCliente = null;
-		String categoria = null;
-		String tipologia = null;
+		//String mailCliente = null;
+		//String categoria = null;
+		//String tipologia = null;
 		
 		try {
 			//controllo esistenza settore
 			
-			categoria = Categoria;
-			tipologia = tipo;
-			settore = SettoriDAO.read(NomeSettore);
+			//categoria = Categoria;
+			//tipologia = tipo;
+			settore = SettoreDAO.readSettore(NomeSettore);
 			
 			if(settore == null) {throw new OperationException("Settore non trovato");
 			}
@@ -61,13 +70,13 @@ public class GestioneCampeggio{
 		
 		
 		
-			PiazzoleDisponibili = PiazzoleDAO.readPiazzoleDisp(settore.getCodiceSettore());
+			PiazzoleDisponibili = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore(),DataInizio,DataFine);
 			//controllo se ci sono abbastanza piazzole
 			if(PiazzoleDisponibili == null){throw new OperationException("Piazzola non disponibile");}
 			
 			//controllo cliente registrato
 			
-			cliente = ClientiRegistratiDAO.readClienteRegistrato(Email);
+			cliente = ClienteRegistratoDAO.readClienteRegistrato(Email);
 			
 			if(cliente==null){throw new OperationException("Cliente non registrato!!");}
 			
@@ -75,14 +84,7 @@ public class GestioneCampeggio{
 			
 			prezzoTot=settore.getCosto();
 			
-			prenotazione = new Prenotazione();
-			
-			prenotazione.setDataInizio(DataInizio);
-			prenotazione.setDataFine(DataFine);
-			prenotazione.setPrezzoPrenotazione(prezzoTot);
-			prenotazione.setPiazzola(PiazzolaInAttesa.getIdPiazzola());
-			prenotazione.setClienteRegistrato(Email);
-			
+			prenotazione = new Prenotazione(DataInizio, DataFine, prezzoTot, Email, PiazzolaInAttesa.getIdPiazzola());
 	
 			
 		}catch(DBConnectionException dEx){
@@ -98,7 +100,7 @@ public class GestioneCampeggio{
 	
 	public void salvaPrenotazione(Prenotazione prenotazione)throws OperationException {
 	  try{
-		PrenotazioniDAO.create(prenotazione.getClienteRegistrato(), prenotazione.getDataInizio(), prenotazione.getDataFine(), prenotazione.getPiazzola(), prenotazione.getPrezzoPrenotazione());
+		PrenotazioneDAO.createPrenotazione(prenotazione);
 	  }catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno applicazione!\n");
 		}catch(DAOException ex) {
@@ -114,7 +116,7 @@ public class GestioneCampeggio{
 	public void InvioCodice(String email)throws OperationException {
 		int codice = 0;
 		try {
-		codice = PrenotazioniDAO.getMaxCodicePrenotazione(email);
+		codice = PrenotazioneDAO.getMaxCodicePrenotazione(email);
 		prenotazione.setCodicePrenotazione(codice);
 		System.out.println("email: "+prenotazione.getClienteRegistrato()+"\n" + prenotazione.getDataInizio()+ "\n"+ prenotazione.getDataFine()+ "\n"+ prenotazione.getPrezzoPrenotazione() + "\n"+ prenotazione.getCodicePrenotazione()+"\n"+ prenotazione.getPiazzola()+"\n");
 		}catch(DBConnectionException dEx){
@@ -129,18 +131,20 @@ public class GestioneCampeggio{
 		int idServizio = IdServizio;
 		ContoSpese conto = null;
 		Servizio servizio = null;
+		Acquisto acquisto= null;
 		
 		try {
-		conto = ContiSpeseDAO.readContoSpesa(codiceConto);
-		servizio = ServiziDAO.readServizio(idServizio);
+		conto = ContiSpeseDAO.readContoSpese(codiceConto);
+		servizio = ServizioDAO.readServizio(idServizio);
 		//controllo se conto spese attivo
 		if(conto == null) {throw new OperationException("Conto non presente!!\n");}
 		if(!(conto.equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
 		if(servizio == null) {throw new OperationException("Servizio inesistente!!\n");}
-		this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
-		this.servizio = new Servizio (servizio.getPrezzoServizio(), servizio.getTipoServizio(), servizio.getIdServizio());
-		StoricoDAO.updateStorico(codiceConto,idServizio, this.servizio.getPrezzoServizio());
-		aggiornaConto(this.conto, this.servizio);
+		//this.conto = new ContoSpese(conto.getCodiceConto(), conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
+		//this.servizio = new Servizio (servizio.getPrezzoServizio(), servizio.getTipoServizio(), servizio.getIdServizio());
+		acquisto= new Acquisto(CodiceConto, IdServizio);
+		AcquistoDAO.createAcquisto(acquisto);
+		//aggiornaConto(this.conto, this.servizio);
 		String s = new String ("Utilizzo servizio confermato. \n");
 		return s;
 		}catch(DBConnectionException dEx){
@@ -150,7 +154,7 @@ public class GestioneCampeggio{
 		}
 		
 	}
-	
+	/*
 	private void aggiornaConto (ContoSpese c, Servizio s) throws OperationException {
 		ContoSpese conto = c;
 		Servizio servizio = s;
@@ -166,43 +170,45 @@ public class GestioneCampeggio{
 		}
 		
 	}
+	*/
 	
-	
-	public void invioElencoSpese(String codiceConto) throws OperationException{
+	public void invioElencoSpese(int codiceConto) throws OperationException{
 		ContoSpese conto=null;
 		float totale;
 		ArrayList<Servizio> ElencoSpese = null;
 		try {
-			conto = ContiSpeseDAO.readContoSpesa(codiceConto);
+			conto = ContiSpeseDAO.readContoSpese(codiceConto);
+			if(conto == null) {throw new OperationException("Conto non presente!!\n");}
+			if(!(conto.equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
+			ElencoSpese = new ArrayList<Servizio>(AcquistoDAO.getListaServizi(codiceConto)); //aggiungere al datbase
 			totale=conto.getTotaleCorrente();
-			ElencoSpese = new ArrayList<Servizio>(StoricoDAO.readElencoSpese(codiceConto)); //aggiungere al datbase
 			for(Servizio p : ElencoSpese ) {
 				System.out.println(p.getIdServizio()+ " "+ p.getTipoServizio()+ " "+ p.getPrezzoServizio()+ "\n");
 			}
 			System.out.println("Torale corrente: "+ totale+ "\n");
 			
 		}catch(DBConnectionException dEx){
-			throw new OperationException("\nRiscontrato problema interno aggiorno conto spese!\n");
+			throw new OperationException("\nRiscontrato problema interno per l'invio mail!\n");
 		}catch(DAOException ex) {
 			throw new OperationException("Ops, errore conto non aggiornato!\n");
 		}
 	}
 	
-	public String RegistrazionePagamento(String CodiceConto) throws OperationException{
+	public void RegistrazionePagamento(int CodiceConto) throws OperationException{
 		
 		ContoSpese conto = null;
 		//ClienteRegistrato cliente = null;
-		String codiceConto = CodiceConto;
+		int codiceConto = CodiceConto;
 		String email;
 		String conferma = new String(); 
 		float totale = 0;
 		try {
-			conto = ContiSpeseDAO.readContoSpesa(codiceConto);
+			conto = ContiSpeseDAO.readContoSpese(codiceConto);
 			if(conto == null) {throw new OperationException("Conto non presente!!\n");}
 			if(!(conto.getStato().equals("ATTIVO"))) {throw new OperationException("Conto non attivo!!\n");}
 			if(conto.getTotaleCorrente() == 0) {throw new OperationException("Conto vuoto!!\n");}
-			this.conto = new ContoSpese(conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
-			stampaContoFinale(this.conto);
+			//this.conto = new ContoSpese(conto.getStato(), conto.getTotaleCorrente(), conto.getClienteRegistrato());
+			stampaContoFinale(conto);
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRegistrazione pagamento!\n");
 		}catch(DAOException ex) {
@@ -234,7 +240,7 @@ public class GestioneCampeggio{
 		String conferma = new String(); 
 		try {
 		conto.setStato("PAGATO");
-		ContiSpeseDAO.updateContoSpesa(conto, conto.getCodiceConto());
+		ContiSpeseDAO.updateContoSpese(conto, conto.getCodiceConto());
 		InvioContoFinale(conto);
 		conferma = ChiusuraConto(conto);
 		return conferma;
@@ -266,7 +272,7 @@ public class GestioneCampeggio{
 		ContoSpese conto = Conto;
 		String conferma = new String ("conferma conto chiuso sium");
 		conto.setStato("CHIUSO");
-		ContiSpeseDao.updateStatoContoSpesa(conto, conto.getCodiceConto());
+		ContiSpeseDAO.updateContoSpese(conto, conto.getCodiceConto());
 		return conferma;
 	}catch(DBConnectionException dEx){
 		throw new OperationException("\nRiscontrato problema interno chiusura conto!\n");
@@ -277,27 +283,27 @@ public class GestioneCampeggio{
 	}
 	
 	public int AperturaConto(String Email) throws OperationException {
-		String email=null;
+		ClienteRegistrato cliente;
 		ContoSpese conto = new ContoSpese("ATTIVO", Email);
 		try {
-			email=ClientiRegistratiDAO.readContoSpesa(Email);
-			if(email == null) {throw new OperationException("Cliente non presente!!\n");}
-			ContiSpeseDAO.create(conto);
-			conto.setCodiceContoSpesa(ContiSpesiDAO.RestituisciID(Email)); //aggiungere funzione nel database
+			cliente =ClienteRegistratoDAO.readClienteRegistrato(Email);
+			if(cliente == null) {throw new OperationException("Cliente non presente!!\n");}
+			ContiSpeseDAO.createContoSpese(conto);
+			return conto.getCodiceConto();
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno ad apertura conto!\n");
 		}catch(DAOException ex) {
 			throw new OperationException("Ops, errore conto non aperto!\n");
 		}
 		
-		return conto.getCodiceConto();
+		
 	}
 	
 	public String Registrazione(String Nome, String Cognome,String Email,String Username, String Password, int Telefono) throws OperationException{
 		String conferma = new String ("Avvenuta registrazione");
 		try {
 			ClienteRegistrato utente = new ClienteRegistrato(Nome, Cognome, Email, Username, Password, Telefono);
-			ClientiRegistratiDAO.createCliente(utente);
+			ClienteRegistratoDAO.createClienteRegistrato(utente);
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno a registrazione!\n");
 		}catch(DAOException ex) {
@@ -311,13 +317,13 @@ public class GestioneCampeggio{
 		ArrayList<Piazzola> PiazzoleDisponibili = null;
 		Settore settore = null;
 		try {
-		settore = SettoriDAO.read(NomeSettore);
+		settore = SettoreDAO.readSettore(NomeSettore);
 		
 		if(settore == null) {throw new OperationException("Settore non trovato");
 		}
 	
 	//controllo piazzola libera
-		PiazzoleDisponibili = PiazzoleDAO.readPiazzoleDisp(settore.getCodiceSettore());
+		PiazzoleDisponibili = PiazzolaDAO.readPiazzoleDisp(settore.getCodiceSettore(),DataInizio,DataFine);
 		//controllo se ci sono abbastanza piazzole
 		if(PiazzoleDisponibili == null){throw new OperationException("Piazzola non disponibile");}
 		for(Piazzola p : PiazzoleDisponibili ) {
@@ -335,10 +341,10 @@ public class GestioneCampeggio{
 		Settore settore = null;
 		Piazzola piazzola = null;
 		try{
-			settore = SettoriDAO.read(idSettore);
+			settore = SettoreDAO.readSettore(idSettore);
 			if(settore == null) {throw new OperationException("Settore non trovato");}
 			piazzola = new Piazzola(idSettore, idPiazzola);
-			PiazzoleDAO.createPiazzola(piazzola);
+			PiazzolaDAO.createPiazzola(piazzola);
 			settore.getPiazzole().add(piazzola);
 		}catch(DBConnectionException dEx){
 			throw new OperationException("\nRiscontrato problema interno a inserimentoPiazzola!\n");
