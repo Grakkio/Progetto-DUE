@@ -9,7 +9,7 @@ public class ClienteRegistrato {
 	private String password;
 	private int numeroTelefono;
 	
-	public ClienteRegistrato(String nome, String cognome, String mail, String username, String password, int numero) {
+	public ClienteRegistrato(String mail, String nome, String cognome, String username, String password, int numero) {
 		
 		this.nome = nome;
 		this.cognome = cognome;

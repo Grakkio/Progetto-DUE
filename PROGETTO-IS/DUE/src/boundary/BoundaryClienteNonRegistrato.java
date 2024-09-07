@@ -154,8 +154,6 @@ public class BoundaryClienteNonRegistrato {
 		
 		
 		while(!InputValido) {
-			while(!prova) {
-			prova=true;
 			System.out.println("Inserire il proprio nome: \n");
 			nome=scan.nextLine();
 			for(int i=0; i<nome.length() && prova; i++) {
@@ -163,33 +161,36 @@ public class BoundaryClienteNonRegistrato {
 					prova=false;
 					System.out.println("Inserire solo caratteri nel nome!!\n");
 				}
+			
 			}
-			}
-			if(nome.length()>20){
-				System.out.println("Non si possono inserire più di 20 caratteri! \n");
-				InputValido=false;
+			if(prova) {
+				if(nome.length()>20){
+					System.out.println("Non si possono inserire più di 20 caratteri! \n");
+					InputValido=false;
 				}else InputValido=true;
 			}
+		}
 		
 			
 		InputValido=false;
+		prova=true;
 		while(!InputValido) {
-			while(!prova) {
-			prova=true;
 			System.out.println("Inserire il proprio cognome: \n");
 			cognome=scan.nextLine();
 			for(int i=0; i<cognome.length() && prova; i++) {
 				if(cognome.charAt(i)<='a'|| cognome.charAt(i)>='z' && cognome.charAt(i)<='A' || cognome.charAt(i)>='Z') {
 					prova=false;
 					System.out.println("Inserire solo caratteri nel cognome!!\n");
+				
 				}
 			}
-			}
-			if(cognome.length()>20){
-				System.out.println("Non si possono inserire più di 20 caratteri! \n");
-				InputValido=false;
+			if(prova) {
+				if(cognome.length()>20){
+					System.out.println("Non si possono inserire più di 20 caratteri! \n");
+					InputValido=false;
 				}else InputValido=true;
 			}
+		}
 		
 		
 		InputValido = false;

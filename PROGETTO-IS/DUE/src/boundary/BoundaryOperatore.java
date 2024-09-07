@@ -60,13 +60,28 @@ private static void aperturaConto() {
 
 private static void registrazionePagamento() {
 	GestioneCampeggio gC = GestioneCampeggio.getInstance();
-	String codiceConto=null;
+	int codiceConto=0;
+	String risposta=null;
 	String pagamento=null;
-	
+	boolean InputValido = false;
+	boolean prova=true;
 	
 	try {
-		System.out.println("Inserisci il codice del conto spesa del cliente: ");
-		codiceConto = scan.nextLine();
+			while(!InputValido) {
+				System.out.println(" Inserisci il codice del conto spesa del cliente: ");
+				risposta = scan.nextLine();
+				for (int i = 0; i< risposta.length() && prova; i++) {
+					if(risposta.charAt(i)<'0' || risposta.charAt(i) > '9'  ) {
+						prova = false;
+						System.out.println("Mettere solo numeri!!!");
+					}
+				}
+				if(prova) {
+					InputValido = true;
+					codiceConto = Integer.parseInt(risposta);
+					}
+				}
+		
 		gC.RegistrazionePagamento(codiceConto);
 	}catch(OperationException e) {
 		System.out.println(e.getMessage());
