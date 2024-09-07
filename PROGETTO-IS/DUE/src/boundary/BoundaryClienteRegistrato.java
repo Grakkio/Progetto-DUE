@@ -310,6 +310,7 @@ private static void EffettuaPrenotazione() {
 		try {
 			String acquisto = gestioneCampeggio.AcquistaServizio(codiceConto, codiceServizio);
 			System.out.println(acquisto);
+			gestioneCampeggio.invioElencoSpese();
 			}catch(OperationException e) {
 				System.out.println(e.getMessage());}	
 		}
